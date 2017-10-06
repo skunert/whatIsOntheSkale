@@ -1,6 +1,4 @@
-My IP: 10.34.66.244
-
-* Using the Home Smart Home app to pair devices.
+# Using the Home Smart Home app to pair devices. #
 
 Pairing the Develco devices is done by accessing the Develco Gateway.
 
@@ -20,12 +18,15 @@ For easy copy/paste:
 | Temp/Humidity | 0015 BC00 3500 03A1   |
 | Motion Sensor | 0015 BC00 1A00 623A   |```
 
-** Tip:
+## Tip:
 
 Remove batteries to force restart and get to
 For wall-powered plug-unplug.
 
+# Getting Started
 
-* Getting Started
+ * Clone this repository `git clone git@prod01-gitlab01.geeny.local:developers/HackathonKit.git`
 
-* Account Provisioning
+# Account Provisioning
+
+TODO
