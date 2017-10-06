@@ -4,7 +4,7 @@ Pairing the Develco devices is done by accessing the Develco Gateway.
 
 First, go to the IP of your gateway:
 
-<Your IP>:8000/
+[Your IP]:8000/
 
 You'll need the serial number of the device to access the device.
 
