@@ -8,7 +8,7 @@ const appId = process.env["GEENY_APPLICATION_ID"]
 const host = process.env["GEENY_APPLICATION_BROKER_URL"]
 
 const brokerConfig = {
-  appId: 'ae118b65-d186-41c7-85db-9630c7dc666d', // <-  Your App ID
+  appId: appId,
   messageTypeId: '54121087-14f1-4c2a-835f-117681618cc9', // incoming Develco messageType
   iteratorType: 'LATEST',
   maxBatchSize: 10
