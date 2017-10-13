@@ -2,8 +2,10 @@ const axios = require('axios')
 const sleep = require('sleep')
 const base64 = require('base-64')
 // const config = require('config')
+const thingState = require('./modules/thingState')
 
-// const thingState = require('./modules/thingState')
+const appId = process.env["GEENY_APPLICATION_ID"]
+const host = process.env["GEENY_APPLICATION_BROKER_URL"]
 
 const brokerConfig = {
   appId: 'ae118b65-d186-41c7-85db-9630c7dc666d', // <-  Your App ID
@@ -12,7 +14,7 @@ const brokerConfig = {
   maxBatchSize: 10
 }
 
-const host = "https://api.geeny.io/application_broker"
+
 
 async function request (method, url, data) {
   try {
@@ -31,7 +33,10 @@ async function request (method, url, data) {
 
 async function getShards () {
   try {
-    const response = await request('get', `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`)
+    const url = `${host}/application/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
+    console.log(url)
+    const response = await request('get', url)
+    console.log(response)
     return response.shards
   } catch (err) { throw err }
 }
@@ -71,7 +76,6 @@ async function start () {
   try {
     const shards = await getShards()
 
-    // only 1 partition used
     const iterator = await getIterator(shards[0].shardId)
 
     await getMessages(iterator)
