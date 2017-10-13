@@ -1,7 +1,6 @@
 const axios = require('axios')
 const sleep = require('sleep')
 const base64 = require('base-64')
-// const config = require('config')
 const thingState = require('./modules/thingState')
 
 const appId = process.env["GEENY_APPLICATION_ID"]
@@ -13,8 +12,6 @@ const brokerConfig = {
   iteratorType: 'LATEST',
   maxBatchSize: 10
 }
-
-
 
 async function request (method, url, data) {
   try {
@@ -34,7 +31,7 @@ async function request (method, url, data) {
 async function getShards () {
   try {
     const url = `${host}/application/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
-    console.log(url)
+    console.log(`[worker ${process.pid}] Getting shards for url: ${url}`)
     const response = await request('get', url)
     console.log(response)
     return response.shards
@@ -75,19 +72,14 @@ async function getMessages (iterator) {
 async function start () {
   try {
     const shards = await getShards()
-
     const iterator = await getIterator(shards[0].shardId)
 
     await getMessages(iterator)
   } catch (err) {
-    console.log("here?")
-    console.log(err.message)
-
-    // try restart worker after 1 sec
+    process.send({ cmd: "log", message: err.message })
     sleep.sleep(1)
     start()
   }
 }
 
-// run worker
 start()

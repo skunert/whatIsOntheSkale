@@ -1,14 +1,14 @@
 const cluster = require('cluster')
 
-const fetcherSetup = { exec: 'worker.js' }
-const appSetup = { exec: 'app.js' }
-
 if (cluster.isMaster) {
+  let fetcherSetup = { exec: 'worker.js' }
+  let appSetup = { exec: 'app.js' }
+
   cluster.setupMaster(fetcherSetup)
-  cluster.fork()
+  let fetcher = cluster.fork()
 
   cluster.setupMaster(appSetup)
-  cluster.fork()
+  let app = cluster.fork()
 
   cluster.on('exit', function (worker, code, signal) {
     let length = worker.process.spawnargs.length
@@ -17,4 +17,11 @@ if (cluster.isMaster) {
     cluster.setupMaster(config)
     cluster.fork()
   })
+
+  let log = []
+  function messageHandler(worker, message, handle) {
+    app.send(message)
+    console.log("redirected message to app-server")
+  }
+  cluster.on('message', messageHandler)
 }
