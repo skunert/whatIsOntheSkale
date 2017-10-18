@@ -55,9 +55,9 @@ async function getIterator (shardId) {
 async function getMessages (iterator) {
   try {
     const data = await request('get', `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`)
-
     if (data.messages.length > 0) {
       for (let message of data.messages) {
+	process.send({ cmd: "log", message: JSON.stringify(data.messages) })
         await thingState.set(message.userId, message.thingId, base64.decode(message.payload))
         console.log('thingState updated', message.thingId)
       }
@@ -76,7 +76,7 @@ async function start () {
 
     await getMessages(iterator)
   } catch (err) {
-    process.send({ cmd: "log", message: err.message })
+    process.send({ cmd: "log", message: `HOST: ${host}, ERROR: ${err.message}` })
     sleep.sleep(1)
     start()
   }
