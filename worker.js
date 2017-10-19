@@ -51,9 +51,12 @@ async function getIterator (shardId) {
     }
 
     const iterator = await request('post', `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator`, data)
-
+    log(iterator)
     return iterator.shardIterator
-  } catch (err) { throw err }
+  } catch (err) {
+    log(`Error in getIterator, ERROR: ${err.message}`)
+    throw err
+  }
 }
 
 
@@ -75,7 +78,7 @@ async function getMessages (iterator) {
       sleep.sleep(1)
     }
     getMessages(data.nextIterator)
-  } catch (err) { throw err }
+  } catch e(rr) { throw err }
 }
 
 async function start () {
