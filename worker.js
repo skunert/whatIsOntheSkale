@@ -50,8 +50,8 @@ async function getIterator (shardId) {
       maxBatchSize: brokerConfig.maxBatchSize
     }
 
-    const iterator = await request('post', `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator`, data)
-    log(iterator)
+    const iterator = await request('post', `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator`, data)
+
     return iterator.shardIterator
   } catch (err) {
     log(`Error in getIterator, ERROR: ${err.message}`)
@@ -59,11 +59,9 @@ async function getIterator (shardId) {
   }
 }
 
-
-
 async function getMessages (iterator) {
   try {
-    const url = `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
+    const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
     log(url)
     const data = await request('get', url)
 
@@ -78,7 +76,10 @@ async function getMessages (iterator) {
       sleep.sleep(1)
     }
     getMessages(data.nextIterator)
-  } catch e(rr) { throw err }
+  } catch (err) {
+    log(`Error in getIterator: ${err.message}`)
+    throw err
+  }
 }
 
 async function start () {
