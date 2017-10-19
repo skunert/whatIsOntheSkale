@@ -37,7 +37,7 @@ async function getShards () {
     const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
     log(`[worker ${process.pid}] Getting shards for url: ${url}`)
     const response = await request('get', url)
-    log(response)
+    log(JSON.stringify(response))
     return response.shards
   } catch (err) { throw err }
 }
