@@ -13,6 +13,10 @@ const brokerConfig = {
   maxBatchSize: 10
 }
 
+function log (message) {
+  process.send({ cmd: "log", message: message })
+}
+
 async function request (method, url, data) {
   try {
     const response = await axios.request({
@@ -52,12 +56,17 @@ async function getIterator (shardId) {
   } catch (err) { throw err }
 }
 
+
+
 async function getMessages (iterator) {
   try {
-    const data = await request('get', `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`)
+    const url = `${host}/app/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
+    log(url)
+    const data = await request('get', url)
+
     if (data.messages.length > 0) {
       for (let message of data.messages) {
-	process.send({ cmd: "log", message: JSON.stringify(data.messages) })
+	log(JSON.stringify(data.messages))
         await thingState.set(message.userId, message.thingId, base64.decode(message.payload))
         console.log('thingState updated', message.thingId)
       }
@@ -76,7 +85,7 @@ async function start () {
 
     await getMessages(iterator)
   } catch (err) {
-    process.send({ cmd: "log", message: `HOST: ${host}, ERROR: ${err.message}` })
+    log(`HOST: ${host}, ERROR: ${err.message}`)
     sleep.sleep(1)
     start()
   }
