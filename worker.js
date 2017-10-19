@@ -1,7 +1,6 @@
 const axios = require('axios')
 const sleep = require('sleep')
 const base64 = require('base-64')
-const thingState = require('./modules/thingState')
 
 const appId = process.env["GEENY_APPLICATION_ID"]
 const host = process.env["GEENY_APPLICATION_BROKER_URL"]
@@ -37,7 +36,6 @@ async function getShards () {
     const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
     log(`[worker ${process.pid}] Getting shards for url: ${url}`)
     const response = await request('get', url)
-    log(JSON.stringify(response))
     return response.shards
   } catch (err) { throw err }
 }
@@ -59,6 +57,10 @@ async function getIterator (shardId) {
   }
 }
 
+function processData(data) {
+  log(`Message received ${parsedData}`)
+}
+
 async function getMessages (iterator) {
   try {
     const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
@@ -67,9 +69,13 @@ async function getMessages (iterator) {
 
     if (data.messages.length > 0) {
       for (let message of data.messages) {
-	log(JSON.stringify(data.messages))
-        await thingState.set(message.userId, message.thingId, base64.decode(message.payload))
-        console.log('thingState updated', message.thingId)
+	let parsedData = {
+	  userId: message.userId,
+	  thingId: message.thingId,
+	  data: base64.decode(message.payload)
+	}
+
+	processData(parsedData)
       }
       sleep.msleep(250)
     } else {
