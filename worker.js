@@ -34,10 +34,10 @@ async function request (method, url, data) {
 
 async function getShards () {
   try {
-    const url = `${host}/application/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
-    console.log(`[worker ${process.pid}] Getting shards for url: ${url}`)
+    const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
+    log(`[worker ${process.pid}] Getting shards for url: ${url}`)
     const response = await request('get', url)
-    console.log(response)
+    log(response)
     return response.shards
   } catch (err) { throw err }
 }
