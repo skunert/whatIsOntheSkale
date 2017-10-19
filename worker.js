@@ -12,6 +12,7 @@ const brokerConfig = {
   maxBatchSize: 10
 }
 
+// Simple wrapper to send a message to the central log
 function log (message) {
   process.send({ cmd: "log", message: message })
 }
@@ -34,7 +35,6 @@ async function request (method, url, data) {
 async function getShards () {
   try {
     const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
-    log(`[worker ${process.pid}] Getting shards for url: ${url}`)
     const response = await request('get', url)
     return response.shards
   } catch (err) { throw err }
@@ -57,14 +57,9 @@ async function getIterator (shardId) {
   }
 }
 
-function processData(data) {
-  log(`Message received ${JSON.stringify(data)}`)
-}
-
-async function getMessages (iterator) {
+async function getMessages (iterator, processData) {
   try {
     const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
-    log(url)
     const data = await request('get', url)
 
     if (data.messages.length > 0) {
@@ -88,17 +83,19 @@ async function getMessages (iterator) {
   }
 }
 
-async function start () {
+async function start (processData) {
   try {
     const shards = await getShards()
     const iterator = await getIterator(shards[0].shardId)
 
-    await getMessages(iterator)
+    await getMessages(iterator, processData)
   } catch (err) {
-    log(`HOST: ${host}, ERROR: ${err.message}`)
+    log(`Error at start(), ERROR: ${err.message}`)
     sleep.sleep(1)
     start()
   }
 }
 
-start()
+start(function (data) {
+  log(`Message received ${JSON.stringify(data)}`)
+})
