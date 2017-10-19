@@ -58,7 +58,7 @@ async function getIterator (shardId) {
 }
 
 function processData(data) {
-  log(`Message received ${parsedData}`)
+  log(`Message received ${data}`)
 }
 
 async function getMessages (iterator) {
