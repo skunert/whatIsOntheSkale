@@ -76,7 +76,7 @@ async function getMessages (iterator, processData) {
     } else {
       sleep.sleep(1)
     }
-    getMessages(data.nextIterator)
+    getMessages(data.nextIterator, processData)
   } catch (err) {
     log(`Error in getIterator: ${err.message}`)
     throw err
