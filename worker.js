@@ -14,7 +14,7 @@ const brokerConfig = {
 
 // Simple wrapper to send a message to the central log
 function log (message) {
-  process.send({ cmd: "log", message: message })
+  process.send({ cmd: "log", message: message, date: Date() })
 }
 
 async function request (method, url, data) {
@@ -97,5 +97,5 @@ async function start (processData) {
 }
 
 start(function (data) {
-  log(`Message received ${JSON.stringify(data)}`)
+  process.send({ cmd: "add", message: JSON.stringify(data) })
 })
