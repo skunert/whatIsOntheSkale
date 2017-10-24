@@ -1,5 +1,7 @@
 const express = require('express')
 const axios = require('axios')
+const base64 = require('base-64')
+const uuid = require('uuid/v4')
 
 const app = express()
 
@@ -91,7 +93,11 @@ app.get('/publish', async function (req, res) {
   try {
     const value = await publish('{ payload: "on" }')
     res.send(`Your publish result: ${value}`)
-  } catch (err) { throw err }
+    return;
+  } catch (err) {
+    res.send(`Error: ${err.message}`)
+    return;
+  }
 })
 
 app.listen(80, function () {
