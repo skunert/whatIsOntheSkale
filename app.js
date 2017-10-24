@@ -1,4 +1,5 @@
 const express = require('express')
+const axios = require('axios')
 
 const app = express()
 
@@ -7,29 +8,14 @@ let log = []
 let develcoMessages = []
 
 const HOST = process.env["GEENY_APPLICATION_BROKER_URL"]
-const DEVELCO_APP = "123"
 
-function publish () {
-  await axios.request({
-    url: `${HOST}/app/${}/messageType/${req.params.messageType}/messages`,
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    data: {
-      messages: [
-        {
-          messageId: uuid(),
-          payload: base64.encode(req.body.payload),
-          userId: req.user.id,
-          thingId: req.params.thingId
-        }
-      ]
-    }
-  })
-  return { message: 'success' };
-}
+// From /msgs
+const THING_ID = "8601bdc3-6a39-4166-936c-a637f69fb948"
+const USER_ID = "9e0667e7-280f-466c-9fe3-b250453446b2"
+
+// From Develco APP: https://prod01-gitlab01.geeny.local/developers/home-smart-home-app/blob/master/config/default.js#L5
+const DEVELCO_APP = 'a3a85485-7c3f-4bb8-b203-0eddb952c47c'
+const MESSAGE_TYPE = '5d610b4f-5532-4e24-b46f-c355bdd99958'
 
 // HACK: IPC using messages between worker and web-app
 process.on('message', function(message) {
@@ -77,6 +63,35 @@ app.get('/env', function (req, res) {
 
 app.get('/', function (req, res) {
   res.send('Your Hackathon App!')
+})
+
+async function publish(payload) {
+  const response = await axios.request({
+    url: `${HOST}/app/${DEVELCO_APP}/messageType/${MESSAGE_TYPE}/messages`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    data: {
+      messages: [
+        {
+          messageId: uuid(),
+          payload: base64.encode(payload),
+          userId: USER_ID,
+          thingId: THING_ID
+        }
+      ]
+    }
+  })
+  return { message: 'success' };
+}
+
+app.get('/publish', async function (req, res) {
+  try {
+    const value = await publish('{ payload: "on" }')
+    res.send(`Your publish result: ${value}`)
+  } catch (err) { throw err }
 })
 
 app.listen(80, function () {
