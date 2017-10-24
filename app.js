@@ -68,8 +68,10 @@ app.get('/', function (req, res) {
 })
 
 async function publish(payload) {
+  const url = `${HOST}/app/${DEVELCO_APP}/messageType/${MESSAGE_TYPE}/messages`
+  log.push([null, url])
   const response = await axios.request({
-    url: `${HOST}/app/${DEVELCO_APP}/messageType/${MESSAGE_TYPE}/messages`,
+    url: url,
     method: 'post',
     headers: {
       'Content-Type': 'application/json',

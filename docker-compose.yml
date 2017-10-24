@@ -2,7 +2,7 @@ version: '2'
 services:
   helloworld:
     environment:
-      - GEENY_APPLICATION_BROKER_URL="https://developers.geeny.io/internal/application-broker"
+      - GEENY_APPLICATION_BROKER_URL=https://developers.geeny.io/internal/application-broker
     build: .
     ports:
       - "3000:80"
