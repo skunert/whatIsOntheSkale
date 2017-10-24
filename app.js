@@ -6,6 +6,31 @@ const MAX_LENGTH = 100
 let log = []
 let develcoMessages = []
 
+const HOST = process.env["GEENY_APPLICATION_BROKER_URL"]
+const DEVELCO_APP = "123"
+
+function publish () {
+  await axios.request({
+    url: `${HOST}/app/${}/messageType/${req.params.messageType}/messages`,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    data: {
+      messages: [
+        {
+          messageId: uuid(),
+          payload: base64.encode(req.body.payload),
+          userId: req.user.id,
+          thingId: req.params.thingId
+        }
+      ]
+    }
+  })
+  return { message: 'success' };
+}
+
 // HACK: IPC using messages between worker and web-app
 process.on('message', function(message) {
   function appendWithMaxLength(array, element) {
