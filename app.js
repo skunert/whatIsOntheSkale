@@ -10,6 +10,7 @@ let log = []
 let develcoMessages = []
 
 const HOST = process.env["GEENY_APPLICATION_BROKER_URL"]
+const PUBLISHER_HOST = "https://gre-api.geeny.io/app"
 
 // From /msgs
 const THING_ID = "8601bdc3-6a39-4166-936c-a637f69fb948"
@@ -68,7 +69,7 @@ app.get('/', function (req, res) {
 })
 
 async function publish(payload) {
-  const url = `${HOST}/app/${DEVELCO_APP}/messageType/${MESSAGE_TYPE}/messages`
+  const url = `${PUBLISHER_HOST}/${DEVELCO_APP}/messageType/${MESSAGE_TYPE}/messages`
   log.push([null, url])
   const response = await axios.request({
     url: url,
