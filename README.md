@@ -48,7 +48,16 @@ wall-powered sensors, plug-unplug.
 
 ### Tip:
 
-Edit the ./build_and_push.sh script for deploying faster.
+Edit the ./build_and_push.sh script for deploying faster. You only need to set the
+following variables:
+
+```
+#!/bin/sh
+
+APP_ID=<your app id>
+USER_ID=<your-id>
+
+```
 
 # Step 3. How to use this Kit
 
@@ -62,6 +71,8 @@ Once Deployed you have two useful paths utilities to debug your application.
 
 * `<your-app-url>/msgs`: Will render the messages you have got so far (F5/Refresh and
   you should see the new upcoming messages)
+
+![Alt text](docs/messages-log.png?raw=true "Messages")
 
 * `<your-app-url>/log`: Using the "log" function you can add logs to an internal
   array and analyze them in this path.

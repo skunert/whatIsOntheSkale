@@ -1,7 +1,7 @@
 #!/bin/sh
 
-APP_ID=<your app id>
-USER_ID=<your-id>
+APP_ID=8eb9019d-46fc-4a26-848f-c011806cb2dc
+USER_ID=diego@geeny.io
 
 # Login
 docker login -u "$USER_ID" registry.geeny.io
