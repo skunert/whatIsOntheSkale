@@ -19,7 +19,9 @@ users. Use *ONE* user to setup the formulas and elements ahead.
 Pairing the Develco devices is done by accessing the Develco Gateway.
 First, go to the IP of your gateway:
 
+```
 [Your Gateway IP]:8000/
+```
 
 After login and you should be prompted with the following screen
 
