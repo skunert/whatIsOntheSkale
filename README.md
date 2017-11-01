@@ -28,7 +28,8 @@ After login and you should be prompted with the following screen
 ![Alt text](docs/smart-home-1.png?raw=true "Login")
 
 
-Click the [+] button for adding new devices. You'd need your
+Click the [+] button for adding new devices. You'd need the serial number of your
+device which is written in the device itself.
 
 ![Alt text](docs/smart-home-2.png?raw=true "Sensor Management")
 
