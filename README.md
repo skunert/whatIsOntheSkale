@@ -23,12 +23,12 @@ First, go to the IP of your gateway:
 
 After login and you should be prompted with the following screen
 
-[[https://github.com/geeny/Hackathon/blob/master/docs/smart-home-1.png]]
+![Alt text](docs/smart-home-1.png?raw=true "Login")
+
 
 Click the [+] button for adding new devices. You'd need your
 
-[[https://github.com/geeny/Hackathon/blob/master/docs/smart-home-2.png]]
-
+![Alt text](docs/smart-home-2.png?raw=true "Sensor Management")
 
 ### Tip:
 
