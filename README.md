@@ -7,6 +7,9 @@ that reads message-streams from Geeny. This sample is intended as initial Boiler
 template to easily get started with Develco messages. This README is self-contained
 documentation about how to get started with this project.
 
+It tries to be as minimalistic as possible and avoid dependencies. Feel free to add
+your own dependencies and complicate this example as much as you want.
+
 # Step 0. Get yourself a Developer Account.
 
 We are making things super simple for the Hackathon. No worries about onboarding
@@ -78,3 +81,12 @@ Once Deployed you have two useful paths utilities to debug your application.
   array and analyze them in this path.
 
 * `<your-app-url>/`: Your app could live here.
+
+It's entry point is line 62 of `app.js`
+
+```
+// This could be the Root of your App!
+app.get('/', function (req, res) {
+  res.send('Your Hackathon App!')
+})
+```
