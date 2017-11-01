@@ -43,7 +43,7 @@ wall-powered sensors, plug-unplug.
 
 # Step 2. Deploying This Boilerplate Example
 
-1. Clone this repository `git@prod01-gitlab01.geeny.local:developers/HackathonKit.git`
+1. Clone this repository `https://github.com/geeny/Hackathon2018`
 
 2. Refer to the [staging
    docs](http://test-docs.geeny.io.s3-website.eu-central-1.amazonaws.com/getting-started/formulas/step-2/)
