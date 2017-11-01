@@ -1,8 +1,10 @@
 #!/bin/sh
 
-APP_ID=8eb9019d-46fc-4a26-848f-c011806cb2dc
+APP_ID=<your app id>
+USER_ID=<your-id>
+
 # Login
-docker login -u diego@geeny.io registry.geeny.io
+docker login -u "$USER_ID" registry.geeny.io
 # Build your docker image:
 docker build -t "registry.geeny.io/$APP_ID" -f Dockerfile .
 # Push your image to Geeny registry:

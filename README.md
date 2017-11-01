@@ -3,45 +3,39 @@
 ## Introduction ##
 
 This is the Hackathon Kit for the first Geeny Hackathon. It's a simple NodeJS app
-that reads and _publishes_ (TODO) message-streams from Geeny. This sample is intended
-as initial Boilerplate template to easily get started with Develco messages. This
-README is self-contained documentation about how to get started with this project.
+that reads message-streams from Geeny. This sample is intended as initial Boilerplate
+template to easily get started with Develco messages. This README is self-contained
+documentation about how to get started with this project.
 
 # Step 0. Get yourself a Developer Account.
 
 We are making things super simple for the Hackathon. No worries about onboarding
 users. Use *ONE* user to setup the formulas and elements ahead.
 
-# First Step. Setup Home-Smart-Home.
+# Step 1. Setup Home-Smart-Home.
 
 ## Pairing/Login to your Gateway
 
 Pairing the Develco devices is done by accessing the Develco Gateway.
 First, go to the IP of your gateway:
 
-[Your IP]:8000/
+[Your Gateway IP]:8000/
 
-You'll need the serial number of the device to access the device.
-For easy copy/paste:
+After login and you should be prompted with the following screen
 
-```
-Kit #1
-|---------------------------------------|
-| Door Sensor   | 0015 BC00 1E00 337D   |
-| Smart Plug    | 0015 BC00 2F00 1036   |
-| LED Bulb      | 0015 8D00 0150 B4A1   |
-| Flood Alarm   | 0015 BC00 3300 041C   |
-| Smoke Alarm   | 0015 BC00 3100 1640   |
-| Temp/Humidity | 0015 BC00 3500 03A1   |
-| Motion Sensor | 0015 BC00 1A00 623A   |
-```
+[[https://github.com/geeny/Hackathon/blob/master/docs/smart-home-1.png]]
+
+Click the [+] button for adding new devices. You'd need your
+
+[[https://github.com/geeny/Hackathon/blob/master/docs/smart-home-2.png]]
+
 
 ### Tip:
 
 Remove batteries to force restart of the sensor and get faster pairing. For
 wall-powered sensors, plug-unplug.
 
-# Deploying This Boilerplate Example
+# Step 2. Deploying This Boilerplate Example
 
 1. Clone this repository `git@prod01-gitlab01.geeny.local:developers/HackathonKit.git`
 
@@ -51,9 +45,22 @@ wall-powered sensors, plug-unplug.
 
 ### Tip:
 
-Edit the `build_and_push.sh` and set your key for easy deployments.
+Edit the ./build_and_push.sh script for deploying faster.
 
-# First Step. Setup Home-Smart-Home.
-# Account Provisioning
+# Step 3. How to use this Kit
 
-TODO
+The kit consists of 3 files.
+
+* `app.js` contains the simple endpoints for a web app.
+* `worker.js` Polls for new data into your formula
+* `server.js` Entry point of the app, starts the `app.js` and `worker.js`.
+
+Once Deployed you have two useful paths utilities to debug your application.
+
+* `<your-app-url>/msgs`: Will render the messages you have got so far (F5/Refresh and
+  you should see the new upcoming messages)
+
+* `<your-app-url>/log`: Using the "log" function you can add logs to an internal
+  array and analyze them in this path.
+
+* `<your-app-url>/`: Your app could live here.
