@@ -4,6 +4,7 @@ const base64 = require('base-64')
 
 const appId = process.env["GEENY_APPLICATION_ID"]
 const host = process.env["GEENY_APPLICATION_BROKER_URL"]
+const authToken = process.env["GEENY_APPLICATION_AUTH_TOKEN"]
 
 const brokerConfig = {
   appId: appId,
@@ -24,7 +25,8 @@ async function request (method, url, data) {
       url: url,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
       },
       data: data
     })
