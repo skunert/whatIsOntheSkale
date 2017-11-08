@@ -26,6 +26,16 @@ First, go to the IP of your gateway:
 [Your Gateway IP]:8000/
 ```
 
+### How to find the IP?
+
+
+0. Make sure the gateway is already connected to "Telefonica Next" (use a network cable)
+1. Connect to the gateway access point
+2. `nmap 192.168.2.1-255` (or the ip from calling ifconfig after connecting to the accesspoint)
+3. `ssh -i [ssh-key] [ip-from-nmap] ipaddr`
+4. Disconnect from the access point, and connect to the same network (i.e "Telefonica Next")
+
+
 After login and you should be prompted with the following screen
 
 ![Alt text](docs/smart-home-1.png?raw=true "Login")
