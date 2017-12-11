@@ -1,64 +1,144 @@
 const express = require('express')
-const axios = require('axios')
 const base64 = require('base-64')
 const uuid = require('uuid/v4')
+const config = require('./config.js')
+const api = require('./api.js')
 
 const app = express()
+const server = require('http').Server(app)
+const ws = require('socket.io')(server, {
+  path: '/notifications',
+  serveClient: false
+})
 
-const MAX_LENGTH = 100
-let log = []
-let develcoMessages = []
+const {
+  userId,
+  appId,
+  messages,
+  things,
+  messageTypes,
+  publishUrl
+} = config
 
-// HACK: IPC using messages between worker and web-app
+const { request } = api
+
+// IPC using messages between worker and web-app
 process.on('message', function(message) {
-  function appendWithMaxLength(array, element) {
-    array.push(element)
-    while(array.length > MAX_LENGTH) array.shift();
-  }
-
-  if (message.cmd && message.cmd === 'log') {
-    appendWithMaxLength(log, [message.date, message.message])
-    console.log("[LOG] added log to central log")
-  } else if (message.cmd && message.cmd === 'add') {
-    appendWithMaxLength(develcoMessages, message.message)
+  if (message.cmd && message.cmd === 'add') {
+    pushMessage(message.message)
   }
 })
 
-app.get('/log', function (req, res) {
-  let reversedLog = log.slice(0).reverse() // Clone the log to avoid global state
-  var dateFormat = require('dateformat');
-
-  let formattedLog =
-      reversedLog.map(
-	(value) => `[${dateFormat(value[0], "isoDateTime")}] ${value[1]}`
-      ).join("</br>")
-  res.send(formattedLog)
+// routes
+app.get('/msgs', function(req, res) {
+  const msgs = messages.all.items
+  res.send(getHtmlOutput(msgs))
 })
 
-app.get('/msgs', function (req, res) {
-  if (develcoMessages.length == 0) {
-    res.send("No Messages Received")
-  } else {
-    let messages = develcoMessages.slice(0).reverse() // Clone the log to avoid global state
-    let formattedMessages =
-	messages.map(
-	  (value) => `${value}`
-	).join("</br>")
-
-    res.send("Messages: </br>" + messages.join("</br>"))
-  }
+app.get('/skale-weight', (req, res) => {
+  res.sendFile(`${__dirname}/skale-weight.html`)
 })
 
-app.get('/env', function (req, res) {
+
+app.get('/skale-buttons', (req, res) => {
+  const msgs = messages.skaleButton.items
+  res.send(getHtmlOutput(msgs))
+})
+
+app.get('/develco-hub', (req, res) => {
+  const msgs = messages.develco.items
+  res.send(getHtmlOutput(msgs))
+})
+
+app.get('/send-message', (req, res) => {
+  const thing = req.query.thing
+  const cmd = req.query.cmd
+  sendMessage(thing, cmd)
+  res.send('command accepted.')
+})
+
+app.get('/env', function(req, res) {
   res.send('My Env:' + JSON.stringify(process.env))
 })
 
+// This could be the Root of your App!
+app.get('/', function(req, res) {
+  res.send('Your Hackathon App!')
+})
 
-app.listen(80, function () {
+app.disable('etag')
+
+server.listen(process.env['APP_PORT'] || 80, function() {
   console.log('Your Hackathon app is listening on port 80!')
 })
 
-// This could be the Root of your App!
-app.get('/', function (req, res) {
-  res.send('Your Hackathon App!')
-})
+function getHtmlOutput(msgs) {
+  if (msgs.length) {
+    const messages = msgs
+      .slice(0)
+      .reverse()
+      .map(m => JSON.stringify(m))
+      .join('<br>')
+    return `Messages: <br> ${messages}`
+  } else {
+    return "No messages received."
+  }
+}
+
+function pushMessage(msg) {
+  const message = { ...JSON.parse(msg), created: new Date()}
+  const messageName = messageTypes[message.messageTypeId]
+  if (messageName && messages[messageName]) {
+    ws.emit('messages', { ...message, type: messageName})
+    pushToStore(messages[messageName], message)
+  }
+  pushToStore(messages.all, message)
+}
+
+function pushToStore(store, message) {
+  store.items.push(message)
+  while (store.items.length > store.limit) {
+    store.items.shift()
+  }
+}
+
+function sendMessage(thingName, cmd) {
+  const thing = getThing(thingName)
+
+  if (!thing[cmd]) {
+    throw new Error(`No such command: ${cmd} for ${thingName}`)
+  }
+
+  const body = {
+    messages: [{
+      userId,
+      thingId: thing.thingId,
+      messageId: uuid(),
+      payload: toBase64(thing[cmd])
+    }]
+  }
+  request('post', `${publishUrl}/${appId}/messageType/${thing.messageTypeId}/messages`, body)
+}
+
+function getThing(thingName) {
+  const thing = config.things[thingName]
+
+  if (!thing) {
+    throw new Error(`error: No such thing: ${thingName} defined in config`)
+  } else if (!thing.thingId) {
+    throw new Error(`error: please, specify thingId for ${thingName} in config`)
+  } else if (!thing.messageTypeId) {
+    throw new Error(`error: please, specify messageTypeId for ${thingName} in config`)
+  } else {
+    return thing
+  }
+}
+
+function toBase64(val) {
+  if (typeof val === 'number') {
+    const hexString = val.toString(16)
+    return new Buffer(hexString, 'hex').toString('base64')
+  } else {
+    return base64.encode(val)
+  }
+}
