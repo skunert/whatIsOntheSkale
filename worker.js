@@ -3,7 +3,7 @@ const base64 = require('base-64')
 const config = require('./config.js')
 const api = require('./api.js')
 
-const { appId, subscribeUrl, authToken, messageTypes } = config
+const { appId, subscribeUrl, authToken, subscribeMessageTypes } = config
 
 const request = api.request
 
@@ -59,7 +59,7 @@ function pullMessages(onMessage) {
     getMessages(shard, onMessage)
   }
 
-  setTimeout(() => pullMessages(onMessage), 1)
+  setTimeout(() => pullMessages(onMessage), 10)
 }
 
 function getMessages(shard, onMessage) {
@@ -87,7 +87,7 @@ function getMessages(shard, onMessage) {
 
 async function startAll(onMessage) {
   pullMessages(onMessage);
-  Object.keys(messageTypes).forEach(id => pullShards(id))
+  Object.keys(subscribeMessageTypes).forEach(id => pullShards(id))
 }
 
 startAll(function(data) {

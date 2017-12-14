@@ -16,7 +16,7 @@ const {
   appId,
   messages,
   things,
-  messageTypes,
+  subscribeMessageTypes,
   publishUrl
 } = config
 
@@ -35,10 +35,13 @@ app.get('/msgs', function(req, res) {
   res.send(getHtmlOutput(msgs))
 })
 
-app.get('/skale-weight', (req, res) => {
+app.get('/weight', (req, res) => {
   res.sendFile(`${__dirname}/skale-weight.html`)
 })
 
+app.get('/smart-light', (req, res) => {
+  res.sendFile(`${__dirname}/develco-motion.html`)
+})
 
 app.get('/skale-buttons', (req, res) => {
   const msgs = messages.skaleButton.items
@@ -68,9 +71,15 @@ app.get('/', function(req, res) {
 
 app.disable('etag')
 
-server.listen(process.env['APP_PORT'] || 80, function() {
+server.listen(80, function() {
   console.log('Your Hackathon app is listening on port 80!')
 })
+
+ws.on('connection', function(socket){
+  socket.on('thing_command', function(msg) {
+    sendMessage(msg.thing, msg.cmd)
+  });
+});
 
 function getHtmlOutput(msgs) {
   if (msgs.length) {
@@ -87,7 +96,7 @@ function getHtmlOutput(msgs) {
 
 function pushMessage(msg) {
   const message = { ...JSON.parse(msg), created: new Date()}
-  const messageName = messageTypes[message.messageTypeId]
+  const messageName = subscribeMessageTypes[message.messageTypeId]
   if (messageName && messages[messageName]) {
     ws.emit('messages', { ...message, type: messageName})
     pushToStore(messages[messageName], message)
