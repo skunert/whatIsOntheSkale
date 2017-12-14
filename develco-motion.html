@@ -1,0 +1,53 @@
+<html>
+<head>
+  <title>Illuminance</title>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script>
+    var httpProtocol = window.location.protocol
+    var wsProtocol = 'http:'
+    var hostName = window.location.hostname
+    var backendPort = window.location.port || 80
+    var WS_NOTIFICATION_URL = wsProtocol + '//' + hostName + ':' + backendPort
+
+    var socket = io(WS_NOTIFICATION_URL, {
+      path: '/notifications'
+    })
+
+    var shade = 0
+    socket.on('messages', message => {
+      if (message.type === 'develco') {
+        var data = JSON.parse(message.data)
+        if(data['MeasuredValue_Illuminance']) {
+          var illuminance = +data['MeasuredValue_Illuminance'].split(" Lux")[0]
+          var nextShade = Math.round(255 / 1000 * illuminance)
+          animateShade(nextShade)
+        }
+      }
+    })
+
+    function setBackground(shade) {
+      document.body.style.backgroundColor= 'rgb(' + shade + ',' + shade + ',' + shade + ')'
+    }
+
+    function animateShade(nextShade) {
+      if (shade < nextShade) {
+        shade++
+        setBackground(shade)
+        setTimeout(function () {animateShade(nextShade)}, 0)
+      } else if (shade > nextShade) {
+        shade--
+        setBackground(shade)
+        setTimeout(function () {animateShade(nextShade)}, 0)
+      } else {
+        if (shade < 80) {
+          socket.emit('thing_command', {thing: 'smart_bulb_1', cmd: 'cmd_on'})
+        } else {
+          socket.emit('thing_command', {thing: 'smart_bulb_1', cmd: 'cmd_off'})
+        }
+      }
+    }
+  </script>
+</body>
+</html>

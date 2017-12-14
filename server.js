@@ -21,7 +21,7 @@ if (cluster.isMaster) {
   let log = []
   function messageHandler(worker, message, handle) {
     app.send(message)
-    console.log("redirected message to app-server")
+    console.log(`redirected message: ${JSON.stringify(message)} to app-server`)
   }
   cluster.on('message', messageHandler)
 }

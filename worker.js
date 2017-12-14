@@ -1,103 +1,98 @@
 const axios = require('axios')
-const sleep = require('sleep')
 const base64 = require('base-64')
+const config = require('./config.js')
+const api = require('./api.js')
 
-const appId = process.env["GEENY_APPLICATION_ID"]
-const host = process.env["GEENY_APPLICATION_BROKER_URL"]
-const authToken = process.env["GEENY_APPLICATION_AUTH_TOKEN"]
+const { appId, subscribeUrl, authToken, subscribeMessageTypes } = config
 
-const brokerConfig = {
-  appId: appId,
-  messageTypeId: '54121087-14f1-4c2a-835f-117681618cc9', // incoming Develco messageType
+const request = api.request
+
+let activeIterators = []
+
+let allShards = []
+
+let nextShardIndex = 0
+
+const concurrentRequestsLimit = 8
+
+const iteratorConfig = {
   iteratorType: 'LATEST',
-  maxBatchSize: 10
+  maxBatchSize: 500
 }
 
-// Simple wrapper to send a message to the central log
-function log (message) {
-  process.send({ cmd: "log", message: message, date: Date() })
+async function getShards(messageTypeId) {
+  const url = `${subscribeUrl}/${appId}/messageType/${messageTypeId}`
+  const response = await request('get', url)
+  return response.shards
 }
 
-async function request (method, url, data) {
-  try {
-    const response = await axios.request({
-      method: method,
-      url: url,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      data: data
-    })
-    return response.data
-  } catch (err) { throw err }
-}
-
-async function getShards () {
-  try {
-    const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}`
-    const response = await request('get', url)
-    return response.shards
-  } catch (err) { throw err }
-}
-
-async function getIterator (shardId) {
-  try {
-    const data = {
-      shardId: shardId,
-      iteratorType: brokerConfig.iteratorType,
-      maxBatchSize: brokerConfig.maxBatchSize
-    }
-
-    const iterator = await request('post', `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator`, data)
-
-    return iterator.shardIterator
-  } catch (err) {
-    log(`Error in getIterator, ERROR: ${err.message}`)
-    throw err
+async function getIterator(shardId, messageTypeId) {
+  const data = {
+    shardId,
+    iteratorType: iteratorConfig.iteratorType,
+    maxBatchSize: iteratorConfig.maxBatchSize
   }
+  const iterator = await request('post', `${subscribeUrl}/${appId}/messageType/${messageTypeId}/iterator`, data)
+
+  return iterator.shardIterator
 }
 
-async function getMessages (iterator, processData) {
-  try {
-    const url = `${host}/${brokerConfig.appId}/messageType/${brokerConfig.messageTypeId}/iterator/${iterator}`
-    const data = await request('get', url)
+async function pullShards(messageTypeId) {
+  const receivedShards = await getShards(messageTypeId)
+  const shards = await Promise.all(
+    receivedShards.map(async shard => ({
+      shardId: shard.shardId,
+      messageTypeId,
+      nextIterator: await getIterator(shard.shardId, messageTypeId)
+    }))
+  )
+  allShards = allShards.concat(shards)
+}
+
+function pullMessages(onMessage) {
+  if (allShards.length && activeIterators.length < concurrentRequestsLimit) {
+    const shard = allShards[nextShardIndex]
+    activeIterators.push(shard.nextIterator)
+
+    nextShardIndex = nextShardIndex >= allShards.length - 1 ? 0 : nextShardIndex + 1
+
+    getMessages(shard, onMessage)
+  }
+
+  setTimeout(() => pullMessages(onMessage), 10)
+}
+
+function getMessages(shard, onMessage) {
+  const iterator = shard.nextIterator
+  const url = `${subscribeUrl}/${appId}/messageType/${shard.messageTypeId}/iterator/${iterator}`
+  request('get', url).then(data => {
+    //console.log(`Received messages (${iterator}): ${JSON.stringify(data)}`)
+    shard.nextIterator = data.nextIterator
+    const index = activeIterators.indexOf(iterator)
+    activeIterators = [...activeIterators.slice(0, index), ...activeIterators.slice(index + 1)]
 
     if (data.messages.length > 0) {
       for (let message of data.messages) {
-	let parsedData = {
-	  userId: message.userId,
-	  thingId: message.thingId,
-	  data: base64.decode(message.payload)
-	}
-
-	processData(parsedData)
+        let parsedMessage = {
+          userId: message.userId,
+          thingId: message.thingId,
+          messageTypeId: shard.messageTypeId,
+          data: base64.decode(message.payload)
+        }
+        onMessage(parsedMessage)
       }
-      sleep.msleep(250)
-    } else {
-      sleep.sleep(1)
     }
-    getMessages(data.nextIterator, processData)
-  } catch (err) {
-    log(`Error in getIterator: ${err.message}`)
-    throw err
-  }
+  })
 }
 
-async function start (processData) {
-  try {
-    const shards = await getShards()
-    const iterator = await getIterator(shards[0].shardId)
-
-    await getMessages(iterator, processData)
-  } catch (err) {
-    log(`Error at start(), ERROR: ${err.message}`)
-    sleep.sleep(1)
-    start()
-  }
+async function startAll(onMessage) {
+  pullMessages(onMessage);
+  Object.keys(subscribeMessageTypes).forEach(id => pullShards(id))
 }
 
-start(function (data) {
-  process.send({ cmd: "add", message: JSON.stringify(data) })
+startAll(function(data) {
+  process.send({
+    cmd: "add",
+    message: JSON.stringify(data)
+  })
 })
