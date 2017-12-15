@@ -1,9 +1,13 @@
 <html>
+
 <head>
   <title>Weight</title>
 </head>
+
 <body>
-  Weight: <span id="weight">0</span>
+  Weight:
+  <span id="weight">0</span>
+  <span id="what">Unknown item</span>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script>
     var httpProtocol = window.location.protocol
@@ -17,11 +21,22 @@
     })
 
     var el = document.getElementById('weight')
+    var wl = document.getElementById('what')
+
     socket.on('messages', message => {
       if (message.type === 'skaleMeasure') {
-        el.innerHTML = convertToGrams(message.data)
+        var weight = convertToGrams(message.data)
+        el.innerHTML = weight
+        wl.innerHTML = detect(weight)
       }
     })
+
+    function detect(weight) {
+      if (weight > 273 * 0.9 && weight < 273 * 1.1) {
+        return "empty glas";
+      }
+      return "unknown item";
+    }
 
     function convertToGrams(s = '') {
       let measure = s.substr(2, 6)
@@ -49,4 +64,5 @@
     }
   </script>
 </body>
+
 </html>

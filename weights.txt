@@ -1,0 +1,7 @@
+empty glas: 273g
+pink: 44.8
+yellow: 20.4
+green: 66.4
+bottle of water: 1323.7
+eraser: 85.9
+pen: 11.5
