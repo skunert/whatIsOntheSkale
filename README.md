@@ -65,8 +65,8 @@ Locate the reset button, hold the reset button until it blinks red once, than tw
 
 # Step 2. Deploying This Boilerplate Example
 
-##Deploy this repo into Geeny Runtime Environment
-Follow the tutorial to deploy this repo as the sample application. Make sure you include `Skale_Command`, `Skale_Measure`, `Skale_Command` if you plan to use Skale device. For develco devices you need to add `DevelcoTOCI` and `DevelcoTICO` subscribeMessageTypes. Include all if you plan to use both skale and develco devices. [https://docs.geeny.io/getting-started/formulas/step-2/](https://docs.geeny.io/getting-started/formulas/step-2/)
+## Deploy this repo into Geeny Runtime Environment
+Follow the tutorial to deploy this repo as the sample application. Make sure you include `Skale_Command`, `Skale_Measure`, `Skale_Button` if you plan to use Skale device. For develco devices you need to add `DevelcoTOCI` and `DevelcoTICO` subscribeMessageTypes. Include all if you plan to use both skale and develco devices. [https://docs.geeny.io/getting-started/formulas/](https://docs.geeny.io/getting-started/formulas/)
 
 ## Configure the application(formula) to use your connected devices
 0. [Get your auth token](https://connect.geeny.io/#!/auth/login_create) Use swagger ui to login with your registered developer account. In response you should receive your auth token.
