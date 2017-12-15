@@ -82,16 +82,13 @@
 
 
     function attemptCounter() {
-      if (counter == 1) {
-        return "Excellent, on your first guess"
+      if (counter >= 0 && counter < 15) {
+        return "Excellent!"
       }
-      if (counter == 2) {
+      if (counter > 15 && counter < 29) {
         return "Nice, you got it correct!"
       }
-      if (counter == 3) {
-        return "goodjob!"
-      }
-      if (counter > 3) {
+      if (counter > 30) {
         return "Not bad, but you could do better!"
       }
     }
