@@ -35,8 +35,27 @@
       if (weight > 273 * 0.9 && weight < 273 * 1.1) {
         return "empty glas";
       }
+      if (weight > 44.8 * 0.9 && weight < 44.8 * 1.1) {
+        return "pink postit";
+      }
+      if (weight > 21 * 0.9 && weight < 22 * 1.1) {
+        return "yellow postit";
+      }
+      if (weight > 66.4 * 0.9 && weight < 66.4 * 1.1) {
+        return "green postit";
+      }
+      if (weight > 1323.7 * 0.9 && weight < 1323.7 * 1.1) {
+        return "bottle of water";
+      }
+      if (weight > 85.9 * 0.9 && weight < 85.9 * 1.1) {
+        return "eraser";
+      }
+      if (weight > 11.5 * 0.9 && weight < 11.5 * 1.1) {
+        return "pen";
+      }
       return "unknown item";
     }
+
 
     function convertToGrams(s = '') {
       let measure = s.substr(2, 6)
