@@ -8,7 +8,7 @@
   Weight:
   <span id="weight">0</span>
   <br/>
-  <span id="what">Unknown item</span>
+  <span id="what" style="font-size: 100px">Unknown item</span>
   <br/>
   <span id="attempt">Attempts: 0</span>
 
@@ -72,10 +72,10 @@
     function detect(weight) {
       counter++;
       if (weight < item.weight * 0.9) {
-        return "Item is heavier"
+        return "↑"
       }
       if (weight > item.weight * 1.1) {
-        return "Item is lighter"
+        return "↓"
       }
       return "Correct, I was thinking of " + item.name + " -- " + attemptCounter()
     }
