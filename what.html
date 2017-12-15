@@ -7,7 +7,11 @@
 <body>
   Weight:
   <span id="weight">0</span>
+  <br/>
   <span id="what">Unknown item</span>
+  <br/>
+  <span id="attempt">Attempts: 0</span>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script>
     var httpProtocol = window.location.protocol
@@ -66,7 +70,7 @@
     })
 
     function detect(weight) {
-      counter ++;
+      counter++;
       if (weight < item.weight * 0.9) {
         return "Item is heavier"
       }
@@ -77,17 +81,17 @@
     }
 
 
-    function attemptCounter(){
-      if (attempt == 1){
+    function attemptCounter() {
+      if (attempt == 1) {
         return "Excellent, on your first guess"
       }
-      if (attempt == 2){
+      if (attempt == 2) {
         return "Nice, you got it correct!"
       }
-      if (attempt == 3){
+      if (attempt == 3) {
         return "goodjob!"
       }
-      if (attempt > 3){
+      if (attempt > 3) {
         return "Not bad, but you could do better!"
       }
     }
