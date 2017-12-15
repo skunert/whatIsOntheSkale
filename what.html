@@ -51,27 +51,46 @@
       },
     ];
     var item = items[Math.floor(Math.random() * items.length)];
+    var counter = 0;
     var el = document.getElementById('weight')
     var wl = document.getElementById('what')
+    var attempt = document.getElementById('attempt')
 
     socket.on('messages', message => {
       if (message.type === 'skaleMeasure') {
         var weight = convertToGrams(message.data)
         el.innerHTML = weight
         wl.innerHTML = detect(weight)
+        attempt.innerHTML = counter
       }
     })
 
     function detect(weight) {
+      counter ++;
       if (weight < item.weight * 0.9) {
         return "Item is heavier"
       }
       if (weight > item.weight * 1.1) {
         return "Item is lighter"
       }
-      return "Correct, I was thinking of " + item.name
+      return "Correct, I was thinking of " + item.name + " -- " + attemptCounter()
     }
 
+
+    function attemptCounter(){
+      if (attempt == 1){
+        return "Excellent, on your first guess"
+      }
+      if (attempt == 2){
+        return "Nice, you got it correct!"
+      }
+      if (attempt == 3){
+        return "goodjob!"
+      }
+      if (attempt > 3){
+        return "Not bad, but you could do better!"
+      }
+    }
 
     function convertToGrams(s = '') {
       let measure = s.substr(2, 6)
