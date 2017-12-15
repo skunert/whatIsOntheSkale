@@ -20,6 +20,37 @@
       path: '/notifications'
     })
 
+    var items = [
+      {
+        name: "empty glas",
+        weight: 273,
+      },
+      {
+        name: "pink postit",
+        weight: 44.8,
+      },
+      {
+        name: "yellow postit",
+        weight: 21,
+      },
+      {
+        name: "green postit",
+        weight: 66.4,
+      },
+      {
+        name: "bottle of water",
+        weight: 1323,
+      },
+      {
+        name: "eraser",
+        weight: 85.9,
+      },
+      {
+        name: "pen",
+        weight: 11.5,
+      },
+    ];
+    var item = items[Math.floor(Math.random() * items.length)];
     var el = document.getElementById('weight')
     var wl = document.getElementById('what')
 
@@ -32,28 +63,13 @@
     })
 
     function detect(weight) {
-      if (weight > 273 * 0.9 && weight < 273 * 1.1) {
-        return "empty glas";
+      if (weight < item.weight * 0.9) {
+        return "Item is heavier"
       }
-      if (weight > 44.8 * 0.9 && weight < 44.8 * 1.1) {
-        return "pink postit";
+      if (weight > item.weight * 1.1) {
+        return "Item is lighter"
       }
-      if (weight > 21 * 0.9 && weight < 22 * 1.1) {
-        return "yellow postit";
-      }
-      if (weight > 66.4 * 0.9 && weight < 66.4 * 1.1) {
-        return "green postit";
-      }
-      if (weight > 1323.7 * 0.9 && weight < 1323.7 * 1.1) {
-        return "bottle of water";
-      }
-      if (weight > 85.9 * 0.9 && weight < 85.9 * 1.1) {
-        return "eraser";
-      }
-      if (weight > 11.5 * 0.9 && weight < 11.5 * 1.1) {
-        return "pen";
-      }
-      return "unknown item";
+      return "Correct, I was thinking of " + item.name
     }
 
 
