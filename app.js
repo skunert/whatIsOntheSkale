@@ -23,20 +23,24 @@ const {
 const { request } = api
 
 // IPC using messages between worker and web-app
-process.on('message', function(message) {
+process.on('message', function (message) {
   if (message.cmd && message.cmd === 'add') {
     pushMessage(message.message)
   }
 })
 
 // routes
-app.get('/msgs', function(req, res) {
+app.get('/msgs', function (req, res) {
   const msgs = messages.all.items
   res.send(getHtmlOutput(msgs))
 })
 
 app.get('/weight', (req, res) => {
   res.sendFile(`${__dirname}/skale-weight.html`)
+})
+
+app.get('/what', (req, res) => {
+  res.sendFile(`${__dirname}/what.html`)
 })
 
 app.get('/smart-light', (req, res) => {
@@ -60,23 +64,23 @@ app.get('/send-message', (req, res) => {
   res.send('command accepted.')
 })
 
-app.get('/env', function(req, res) {
+app.get('/env', function (req, res) {
   res.send('My Env:' + JSON.stringify(process.env))
 })
 
 // This could be the Root of your App!
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
   res.send('Your Hackathon App!')
 })
 
 app.disable('etag')
 
-server.listen(80, function() {
+server.listen(80, function () {
   console.log('Your Hackathon app is listening on port 80!')
 })
 
-ws.on('connection', function(socket){
-  socket.on('thing_command', function(msg) {
+ws.on('connection', function (socket) {
+  socket.on('thing_command', function (msg) {
     sendMessage(msg.thing, msg.cmd)
   });
 });
@@ -95,10 +99,10 @@ function getHtmlOutput(msgs) {
 }
 
 function pushMessage(msg) {
-  const message = { ...JSON.parse(msg), created: new Date()}
+  const message = { ...JSON.parse(msg), created: new Date() }
   const messageName = subscribeMessageTypes[message.messageTypeId]
   if (messageName && messages[messageName]) {
-    ws.emit('messages', { ...message, type: messageName})
+    ws.emit('messages', { ...message, type: messageName })
     pushToStore(messages[messageName], message)
   }
   pushToStore(messages.all, message)
